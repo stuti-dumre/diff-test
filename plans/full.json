@@ -1,0 +1,21 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [320, 320],
+  "train": [
+    {"name": "ground_t1000_s1", "arm": "ground", "seed": 1, "exclude": ""},
+    {"name": "ground_guard_fixmod_t1000", "arm": "ground_guard_fixmod", "seed": 0, "exclude": "work/guard_exclude.csv"},
+    {"name": "ground_guard_fixmod_t1000_s1", "arm": "ground_guard_fixmod", "seed": 1, "exclude": "work/guard_exclude.csv"}
+  ],
+  "gen_old": [
+    {"run": "minim_paper_t1000", "arm": "ground_guard", "out": "minim_paper_t1000_dtext", "ids": "x97", "parts": 6},
+    {"run": "minim_paper_t1000_s1", "arm": "ground_guard", "out": "minim_paper_t1000_s1_dtext", "ids": "x97", "parts": 6},
+    {"run": "ground_guard_t1000_s1", "arm": "", "out": "ground_guard_t1000_s1_new58", "ids": "new58", "parts": 4}
+  ],
+  "gen_new": [
+    {"run": "ground_t1000_s1", "arm": "", "out": "ground_t1000_s1", "ids": "p218", "parts": 6},
+    {"run": "ground_guard_fixmod_t1000", "arm": "", "out": "ground_guard_fixmod_t1000", "ids": "p218", "parts": 7},
+    {"run": "ground_guard_fixmod_t1000_s1", "arm": "", "out": "ground_guard_fixmod_t1000_s1", "ids": "p218", "parts": 7}
+  ]
+}

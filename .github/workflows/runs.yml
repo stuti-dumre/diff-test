@@ -1,0 +1,211 @@
+name: runs
+
+on:
+  workflow_dispatch:
+    inputs:
+      plan:
+        description: plan file
+        default: plans/full.json
+
+permissions:
+  contents: read
+
+env:
+  HF_HOME: /home/runner/hf
+  HF_HUB_OFFLINE: "1"
+  HF_HUB_DISABLE_TELEMETRY: "1"
+  PYTHONPATH: ${{ github.workspace }}/work
+  ROCO_SPLIT: ${{ github.workspace }}/work/split.csv
+  ROCO_RUNS: ${{ github.workspace }}/work/runs
+  ROCO_LATENTS: ${{ github.workspace }}/work/latents
+  ENC: openssl enc -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -pass env:RUNS_KEY
+  SHOW: ^(arm=|step |saved |paused |resumed |done:|[0-9]+/[0-9]+ )
+
+jobs:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      train: ${{ steps.plan.outputs.train }}
+      gen_old: ${{ steps.plan.outputs.gen_old }}
+      gen_new: ${{ steps.plan.outputs.gen_new }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: plan
+        run: python3 plan.py "${{ inputs.plan }}" | tee -a "$GITHUB_OUTPUT"
+      - id: hf
+        uses: actions/cache/restore@v4
+        with:
+          path: ~/hf
+          key: hf-sd15-v1
+          lookup-only: true
+      - if: steps.hf.outputs.cache-hit != 'true'
+        env:
+          HF_HUB_OFFLINE: "0"
+        run: |
+          pip install -q huggingface_hub==1.33.0
+          python3 fetch_models.py
+      - if: steps.hf.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/hf
+          key: hf-sd15-v1
+
+  train:
+    needs: setup
+    if: needs.setup.outputs.train != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.setup.outputs.train) }}
+    env:
+      RUNS_KEY: ${{ secrets.RUNS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prep
+        with:
+          key: ${{ secrets.RUNS_KEY }}
+      - name: train
+        run: |
+          set -o pipefail
+          python -u train_lora.py --arm "${{ matrix.arm }}" --tier ${{ matrix.tier }} --steps ${{ matrix.steps }} \
+            --seed ${{ matrix.seed }} --name "${{ matrix.name }}" --exclude "${{ matrix.exclude }}" \
+            --max-minutes ${{ matrix.minutes[0] }} 2>&1 | tee work/log.txt | (grep --line-buffered -E "$SHOW" || true) \
+            || { echo "failed: $(tail -n 1 work/log.txt | cut -c1-160)"; exit 1; }
+      - if: always()
+        run: |
+          mkdir -p out "work/runs/${{ matrix.name }}"
+          cp work/log.txt "work/runs/${{ matrix.name }}/log_stage1.txt" || true
+          tar czf - -C work/runs "${{ matrix.name }}" | $ENC -e -salt -out "out/${{ matrix.name }}.tar.gz.enc"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage1-${{ matrix.name }}
+          path: out/
+          retention-days: 14
+
+  train2:
+    needs: [setup, train]
+    if: ${{ !cancelled() && needs.setup.outputs.train != '[]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 350
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.setup.outputs.train) }}
+    env:
+      RUNS_KEY: ${{ secrets.RUNS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: stage1-${{ matrix.name }}
+          path: in
+      - id: check
+        run: |
+          mkdir -p work/runs
+          $ENC -d -in "in/${{ matrix.name }}.tar.gz.enc" | tar xz -C work/runs
+          if [ -f "work/runs/${{ matrix.name }}/lora.pt" ]; then echo "done=1" >> "$GITHUB_OUTPUT"; echo "finished in stage 1"; fi
+      - if: steps.check.outputs.done != '1'
+        uses: ./.github/actions/prep
+        with:
+          key: ${{ secrets.RUNS_KEY }}
+      - if: steps.check.outputs.done != '1'
+        name: resume
+        run: |
+          set -o pipefail
+          python -u train_lora.py --arm "${{ matrix.arm }}" --tier ${{ matrix.tier }} --steps ${{ matrix.steps }} \
+            --seed ${{ matrix.seed }} --name "${{ matrix.name }}" --exclude "${{ matrix.exclude }}" \
+            --max-minutes ${{ matrix.minutes[1] }} 2>&1 | tee work/log.txt | (grep --line-buffered -E "$SHOW" || true) \
+            || { echo "failed: $(tail -n 1 work/log.txt | cut -c1-160)"; exit 1; }
+          cp work/log.txt "work/runs/${{ matrix.name }}/log_stage2.txt"
+          test -f "work/runs/${{ matrix.name }}/lora.pt" || { echo "not finished after stage 2"; exit 1; }
+      - run: |
+          mkdir -p out
+          tar czf - -C work/runs "${{ matrix.name }}" | $ENC -e -salt -out "out/${{ matrix.name }}.tar.gz.enc"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: model-${{ matrix.name }}
+          path: out/
+          retention-days: 14
+
+  gen_old:
+    needs: setup
+    if: needs.setup.outputs.gen_old != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.setup.outputs.gen_old) }}
+    env:
+      RUNS_KEY: ${{ secrets.RUNS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prep
+        with:
+          key: ${{ secrets.RUNS_KEY }}
+      - name: generate
+        run: |
+          set -o pipefail
+          python -u generate.py --run "${{ matrix.run }}" --arm "${{ matrix.arm }}" --ids "work/items/${{ matrix.ids }}.csv" \
+            --shard ${{ matrix.shard }} --out "${{ matrix.out }}" --steps ${{ matrix.steps }} 2>&1 | tee work/log.txt \
+            | (grep --line-buffered -E "$SHOW" || true) || { echo "failed: $(tail -n 1 work/log.txt | cut -c1-160)"; exit 1; }
+      - if: always()
+        id: pack
+        run: |
+          part="$(echo '${{ matrix.shard }}' | cut -d/ -f1)"
+          mkdir -p out "work/runs/${{ matrix.out }}"
+          cp work/log.txt "work/runs/${{ matrix.out }}/log_${part}.txt" || true
+          echo "part=$part" >> "$GITHUB_OUTPUT"
+          tar czf - -C work/runs "${{ matrix.out }}" | $ENC -e -salt -out "out/${{ matrix.out }}_${part}.tar.gz.enc"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gen-${{ matrix.out }}-${{ steps.pack.outputs.part }}
+          path: out/
+          retention-days: 14
+
+  gen_new:
+    needs: [setup, train2]
+    if: ${{ !cancelled() && needs.setup.outputs.gen_new != '[]' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.setup.outputs.gen_new) }}
+    env:
+      RUNS_KEY: ${{ secrets.RUNS_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/prep
+        with:
+          key: ${{ secrets.RUNS_KEY }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: model-${{ matrix.run }}
+          path: in
+      - name: generate
+        run: |
+          set -o pipefail
+          $ENC -d -in "in/${{ matrix.run }}.tar.gz.enc" | tar xz -C work/runs
+          python -u generate.py --run "${{ matrix.run }}" --arm "${{ matrix.arm }}" --ids "work/items/${{ matrix.ids }}.csv" \
+            --shard ${{ matrix.shard }} --out "${{ matrix.out }}" --steps ${{ matrix.steps }} 2>&1 | tee work/log.txt \
+            | (grep --line-buffered -E "$SHOW" || true) || { echo "failed: $(tail -n 1 work/log.txt | cut -c1-160)"; exit 1; }
+      - if: always()
+        id: pack
+        run: |
+          part="$(echo '${{ matrix.shard }}' | cut -d/ -f1)"
+          mkdir -p out "work/runs/${{ matrix.out }}"
+          cp work/log.txt "work/runs/${{ matrix.out }}/log_${part}.txt" || true
+          echo "part=$part" >> "$GITHUB_OUTPUT"
+          cd work/runs && tar czf - "${{ matrix.out }}/gen" "${{ matrix.out }}"/prompts*.csv "${{ matrix.out }}"/log_*.txt \
+            | $ENC -e -salt -out "../../out/${{ matrix.out }}_${part}.tar.gz.enc"
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gen-${{ matrix.out }}-${{ steps.pack.outputs.part }}
+          path: out/
+          retention-days: 14

@@ -1,0 +1,30 @@
+name: prep
+description: Python packages, model cache and decrypted inputs
+inputs:
+  key:
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.13"
+        cache: pip
+        cache-dependency-path: requirements.txt
+    - shell: bash
+      run: |
+        pip install -q torch==2.11.0 --index-url https://download.pytorch.org/whl/cpu
+        pip install -q -r requirements.txt
+    - uses: actions/cache/restore@v4
+      with:
+        path: ~/hf
+        key: hf-sd15-v1
+        fail-on-cache-miss: true
+    - shell: bash
+      env:
+        RUNS_KEY: ${{ inputs.key }}
+      run: |
+        mkdir -p work
+        for f in locked/*.enc; do
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 200000 -md sha256 -pass env:RUNS_KEY -in "$f" | tar xz -C work
+        done

@@ -1,0 +1,15 @@
+{
+  "tier": 1000,
+  "steps": 4,
+  "gen_steps": 15,
+  "max_minutes": [0.01, 30],
+  "train": [
+    {"name": "smoke_fixmod", "arm": "ground_guard_fixmod", "seed": 0, "exclude": "work/guard_exclude.csv"}
+  ],
+  "gen_old": [
+    {"run": "minim_paper_t1000", "arm": "ground_guard", "out": "smoke_dtext", "ids": "x97", "parts": 48, "only": [0]}
+  ],
+  "gen_new": [
+    {"run": "smoke_fixmod", "arm": "", "out": "smoke_fixmod", "ids": "x97", "parts": 48, "only": [0]}
+  ]
+}
