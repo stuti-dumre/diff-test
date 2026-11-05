@@ -1,0 +1,19 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [320, 320],
+  "train": [
+    {"name": "minim_paper_t500", "arm": "minim_paper", "seed": 0, "exclude": "", "tier": 500},
+    {"name": "ground_guard_t500", "arm": "ground_guard", "seed": 0, "exclude": "work/guard_exclude.csv", "tier": 500},
+    {"name": "minim_paper_t2000", "arm": "minim_paper", "seed": 0, "exclude": "", "tier": 2000},
+    {"name": "ground_guard_t2000", "arm": "ground_guard", "seed": 0, "exclude": "work/guard_exclude.csv", "tier": 2000}
+  ],
+  "gen_old": [],
+  "gen_new": [
+    {"run": "minim_paper_t500", "arm": "", "out": "minim_paper_t500", "ids": "p218", "parts": 6},
+    {"run": "ground_guard_t500", "arm": "", "out": "ground_guard_t500", "ids": "p218", "parts": 6},
+    {"run": "minim_paper_t2000", "arm": "", "out": "minim_paper_t2000", "ids": "p218", "parts": 6},
+    {"run": "ground_guard_t2000", "arm": "", "out": "ground_guard_t2000", "ids": "p218", "parts": 6}
+  ]
+}

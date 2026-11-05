@@ -1,0 +1,15 @@
+{
+  "tier": 1000,
+  "steps": 1200,
+  "gen_steps": 15,
+  "max_minutes": [320, 320],
+  "train": [
+    {"name": "minim_paper_t1000_1200", "arm": "minim_paper", "seed": 0, "exclude": ""},
+    {"name": "ground_guard_t1000_1200", "arm": "ground_guard", "seed": 0, "exclude": "work/guard_exclude.csv"}
+  ],
+  "gen_old": [],
+  "gen_new": [
+    {"run": "minim_paper_t1000_1200", "arm": "", "out": "minim_paper_t1000_1200", "ids": "p218", "parts": 6},
+    {"run": "ground_guard_t1000_1200", "arm": "", "out": "ground_guard_t1000_1200", "ids": "p218", "parts": 6}
+  ]
+}
