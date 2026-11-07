@@ -1,0 +1,13 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [320, 320],
+  "train": [
+    {"name": "ground_t1000_s1", "arm": "ground", "seed": 1, "exclude": ""}
+  ],
+  "gen_old": [],
+  "gen_new": [
+    {"run": "ground_t1000_s1", "arm": "", "out": "ground_t1000_s1", "ids": "p218", "parts": 6}
+  ]
+}
