@@ -1,0 +1,76 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [
+    320,
+    320
+  ],
+  "train": [],
+  "gen_old": [
+    {
+      "run": "ground_guard_t1000",
+      "arm": "minim_paper",
+      "out": "ground_guard_t1000_btext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "ground_guard_t1000_s1",
+      "arm": "minim_paper",
+      "out": "ground_guard_t1000_s1_btext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "ground_guard_t500",
+      "arm": "minim_paper",
+      "out": "ground_guard_t500_btext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "ground_guard_t2000",
+      "arm": "minim_paper",
+      "out": "ground_guard_t2000_btext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "ground_guard_t1000_1200",
+      "arm": "minim_paper",
+      "out": "ground_guard_t1000_1200_btext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "minim_paper_t500",
+      "arm": "ground_guard",
+      "out": "minim_paper_t500_dtext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "minim_paper_t2000",
+      "arm": "ground_guard",
+      "out": "minim_paper_t2000_dtext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "minim_paper_t1000_1200",
+      "arm": "ground_guard",
+      "out": "minim_paper_t1000_1200_dtext",
+      "ids": "x97",
+      "parts": 5
+    },
+    {
+      "run": "minim_paper_t1000_s1",
+      "arm": "",
+      "out": "minim_paper_t1000_s1_new58",
+      "ids": "new58",
+      "parts": 3
+    }
+  ],
+  "gen_new": []
+}
