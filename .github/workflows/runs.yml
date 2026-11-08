@@ -150,7 +150,7 @@ jobs:
         run: |
           set -o pipefail
           python -u generate.py --run "${{ matrix.run }}" --arm "${{ matrix.arm }}" --ids "work/items/${{ matrix.ids }}.csv" \
-            --shard ${{ matrix.shard }} --out "${{ matrix.out }}" --steps ${{ matrix.steps }} 2>&1 | tee work/log.txt \
+            --shard ${{ matrix.shard }} --out "${{ matrix.out }}" --steps ${{ matrix.steps }} --seed-base ${{ matrix.seed_base || 1000 }} 2>&1 | tee work/log.txt \
             | (grep --line-buffered -E "$SHOW" || true) || { echo "failed: $(tail -n 1 work/log.txt | cut -c1-160)"; exit 1; }
       - if: always()
         id: pack
@@ -192,7 +192,7 @@ jobs:
           set -o pipefail
           $ENC -d -in "in/${{ matrix.run }}.tar.gz.enc" | tar xz -C work/runs
           python -u generate.py --run "${{ matrix.run }}" --arm "${{ matrix.arm }}" --ids "work/items/${{ matrix.ids }}.csv" \
-            --shard ${{ matrix.shard }} --out "${{ matrix.out }}" --steps ${{ matrix.steps }} 2>&1 | tee work/log.txt \
+            --shard ${{ matrix.shard }} --out "${{ matrix.out }}" --steps ${{ matrix.steps }} --seed-base ${{ matrix.seed_base || 1000 }} 2>&1 | tee work/log.txt \
             | (grep --line-buffered -E "$SHOW" || true) || { echo "failed: $(tail -n 1 work/log.txt | cut -c1-160)"; exit 1; }
       - if: always()
         id: pack

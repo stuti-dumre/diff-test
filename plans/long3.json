@@ -1,0 +1,94 @@
+{
+  "tier": 1000,
+  "steps": 1200,
+  "gen_steps": 15,
+  "max_minutes": [
+    320,
+    320
+  ],
+  "train": [
+    {
+      "name": "minim_paper_t1000_1200_s1",
+      "arm": "minim_paper",
+      "seed": 1,
+      "exclude": ""
+    },
+    {
+      "name": "minim_paper_t1000_1200_s2",
+      "arm": "minim_paper",
+      "seed": 2,
+      "exclude": ""
+    },
+    {
+      "name": "ground_guard_t1000_1200_s1",
+      "arm": "ground_guard",
+      "seed": 1,
+      "exclude": "work/guard_exclude.csv"
+    },
+    {
+      "name": "ground_guard_t1000_1200_s2",
+      "arm": "ground_guard",
+      "seed": 2,
+      "exclude": "work/guard_exclude.csv"
+    }
+  ],
+  "gen_old": [],
+  "gen_new": [
+    {
+      "run": "minim_paper_t1000_1200_s1",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_s1",
+      "ids": "p218",
+      "parts": 6
+    },
+    {
+      "run": "minim_paper_t1000_1200_s1",
+      "arm": "ground_guard",
+      "out": "minim_paper_t1000_1200_s1_dtext",
+      "ids": "x97",
+      "parts": 3
+    },
+    {
+      "run": "minim_paper_t1000_1200_s2",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_s2",
+      "ids": "p218",
+      "parts": 6
+    },
+    {
+      "run": "minim_paper_t1000_1200_s2",
+      "arm": "ground_guard",
+      "out": "minim_paper_t1000_1200_s2_dtext",
+      "ids": "x97",
+      "parts": 3
+    },
+    {
+      "run": "ground_guard_t1000_1200_s1",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_s1",
+      "ids": "p218",
+      "parts": 6
+    },
+    {
+      "run": "ground_guard_t1000_1200_s1",
+      "arm": "minim_paper",
+      "out": "ground_guard_t1000_1200_s1_btext",
+      "ids": "x97",
+      "parts": 3
+    },
+    {
+      "run": "ground_guard_t1000_1200_s2",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_s2",
+      "ids": "p218",
+      "parts": 6
+    },
+    {
+      "run": "ground_guard_t1000_1200_s2",
+      "arm": "minim_paper",
+      "out": "ground_guard_t1000_1200_s2_btext",
+      "ids": "x97",
+      "parts": 3
+    }
+  ]
+}

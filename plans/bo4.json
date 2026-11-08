@@ -1,0 +1,61 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [
+    320,
+    320
+  ],
+  "train": [],
+  "gen_old": [
+    {
+      "run": "minim_paper_t1000_1200",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_c2000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 2000
+    },
+    {
+      "run": "minim_paper_t1000_1200",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_c3000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 3000
+    },
+    {
+      "run": "minim_paper_t1000_1200",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_c4000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 4000
+    },
+    {
+      "run": "ground_guard_t1000_1200",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_c2000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 2000
+    },
+    {
+      "run": "ground_guard_t1000_1200",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_c3000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 3000
+    },
+    {
+      "run": "ground_guard_t1000_1200",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_c4000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 4000
+    }
+  ],
+  "gen_new": []
+}
