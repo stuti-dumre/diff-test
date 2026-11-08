@@ -1,0 +1,24 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [
+    320,
+    320
+  ],
+  "train": [],
+  "gen_old": [
+    {
+      "run": "ground_guard_t1000_1200",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_c3000",
+      "ids": "p218",
+      "parts": 6,
+      "seed_base": 3000,
+      "only": [
+        2
+      ]
+    }
+  ],
+  "gen_new": []
+}
