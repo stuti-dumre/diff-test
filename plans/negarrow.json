@@ -1,0 +1,61 @@
+{
+  "tier": 1000,
+  "steps": 400,
+  "gen_steps": 15,
+  "max_minutes": [
+    320,
+    320
+  ],
+  "train": [],
+  "gen_old": [
+    {
+      "run": "minim_paper_t1000_1200",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_negarrow",
+      "ids": "p218",
+      "parts": 6,
+      "negative": "with annotation arrows"
+    },
+    {
+      "run": "minim_paper_t1000_1200_s1",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_s1_negarrow",
+      "ids": "p218",
+      "parts": 6,
+      "negative": "with annotation arrows"
+    },
+    {
+      "run": "minim_paper_t1000_1200_s2",
+      "arm": "",
+      "out": "minim_paper_t1000_1200_s2_negarrow",
+      "ids": "p218",
+      "parts": 6,
+      "negative": "with annotation arrows"
+    },
+    {
+      "run": "ground_guard_t1000_1200",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_negarrow",
+      "ids": "p218",
+      "parts": 6,
+      "negative": "with annotation arrows"
+    },
+    {
+      "run": "ground_guard_t1000_1200_s1",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_s1_negarrow",
+      "ids": "p218",
+      "parts": 6,
+      "negative": "with annotation arrows"
+    },
+    {
+      "run": "ground_guard_t1000_1200_s2",
+      "arm": "",
+      "out": "ground_guard_t1000_1200_s2_negarrow",
+      "ids": "p218",
+      "parts": 6,
+      "negative": "with annotation arrows"
+    }
+  ],
+  "gen_new": []
+}

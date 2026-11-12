@@ -23,6 +23,7 @@ ap.add_argument("--res", type=int, default=256)
 ap.add_argument("--ids", default="")
 ap.add_argument("--shard", default="0/1")
 ap.add_argument("--seed-base", type=int, default=1000)
+ap.add_argument("--negative", default="")
 ap.add_argument("--out", default="")
 args = ap.parse_args()
 threads()
@@ -64,8 +65,8 @@ for k, row in test.iterrows():
     if path.exists():
         continue
     seed = args.seed_base + int(row.ID.split("_")[-1])
-    img = pipe(text, num_inference_steps=args.steps, guidance_scale=args.cfg, height=args.res, width=args.res,
-               generator=torch.Generator().manual_seed(seed)).images[0]
+    img = pipe(text, negative_prompt=args.negative or None, num_inference_steps=args.steps, guidance_scale=args.cfg,
+               height=args.res, width=args.res, generator=torch.Generator().manual_seed(seed)).images[0]
     img.save(path)
     if k % 10 == 0:
         print(f"{k + 1}/{len(test)}  {time.time() - t0:.0f} s", flush=True)
